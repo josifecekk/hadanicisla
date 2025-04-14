@@ -1,0 +1,115 @@
+  <meta charset="UTF-8">
+  <title>Hádej číslo</title>
+  <style>
+    body {
+      font-family: Arial;
+      max-width: 600px;
+      margin: auto;
+      text-align: center;
+      padding: 30px;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin: 10px;
+    }
+    .credit {
+      margin-top: 40px;
+      font-style: italic;
+      color: #555;
+    }
+    table {
+      margin: 20px auto;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+    th {
+      background-color: #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎯 Hádej číslo (1–100)</h1>
+  <p>Vyber si jméno, než začneme hrát!</p>
+  
+  <input type="text" id="playerName" placeholder="Zadej své jméno" />
+  <button onclick="startGame()">Začít hru</button>
+  
+  <div id="gameArea" style="display:none;">
+    <p>Hráč: <span id="playerDisplay"></span></p>
+    <p>Zkus uhodnout číslo, které si myslím!</p>
+    <input type="number" id="guessInput" placeholder="Zadej číslo" min="1" max="100">
+    <button onclick="checkGuess()">Hádej</button>
+    <p id="message"></p>
+
+    <h2>📋 Tabulka skóre</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Hra #</th>
+          <th>Počet pokusů</th>
+        </tr>
+      </thead>
+      <tbody id="scoreTableBody">
+      </tbody>
+    </table>
+  </div>
+
+  <p class="credit">Hru "Hádej číslo" udělal Josef Koubek</p>
+
+  <audio id="trumpetSound" src="trumpeta.mp3"></audio> <!-- Zde vlož zvuk trumpety -->
+
+  <script>
+    let secretNumber, attempts, gameCount, playerName;
+
+    function startGame() {
+      playerName = document.getElementById("playerName").value;
+      if (playerName.trim() === "") {
+        alert("Zadej své jméno!");
+        return;
+      }
+
+      // Skrýváme pole pro zadání jména a ukazujeme herní oblast
+      document.getElementById("gameArea").style.display = "block";
+      document.getElementById("playerDisplay").textContent = playerName;
+
+      secretNumber = Math.floor(Math.random() * 100) + 1;
+      attempts = 0;
+      gameCount = 0;
+    }
+
+    function checkGuess() {
+      const guess = Number(document.getElementById("guessInput").value);
+      const message = document.getElementById("message");
+      attempts++;
+
+      if (guess < 1 || guess > 100) {
+        message.textContent = "Zadej číslo mezi 1 a 100!";
+      } else if (guess === secretNumber) {
+        message.textContent = `🎉 Správně, ${playerName}! Uhodl jsi to na ${attempts}. pokus.`;
+
+        // Přehrání zvuku trumpety při výhře
+        document.getElementById("trumpetSound").play();
+
+        // Přidání skóre do tabulky
+        gameCount++;
+        const table = document.getElementById("scoreTableBody");
+        const row = table.insertRow();
+        row.innerHTML = `<td>${gameCount}</td><td>${attempts}</td>`;
+
+        // Reset na novou hru
+        secretNumber = Math.floor(Math.random() * 100) + 1;
+        attempts = 0;
+      } else if (guess < secretNumber) {
+        message.textContent = "Zkus větší číslo!";
+      } else {
+        message.textContent = "Zkus menší číslo!";
+      }
+    }
+  </script>
+</body>
+</html>
